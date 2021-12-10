@@ -1,4 +1,6 @@
 import dataclasses
+import random
+
 import numpy as np
 
 
@@ -18,21 +20,31 @@ class Grid:
             rtn_str += '\n'
         return rtn_str
 
+    def get_empty_spot(self) -> np.ndarray:
+        return np.argwhere(self._array == 0)
+
 
 class Game:
+    _initial_number_of_cells = 2
+
     def __init__(self) -> None:
         self._grid = Grid(size=[4, 4])
 
     def __str__(self):
         return self._grid.__str__()
 
-    def get_empty_spots(self) -> list:
-        pass
+    def get_empty_spots(self) -> np.ndarray:
+        return self._grid.get_empty_spot()
 
     def fill_initial(self):
-        pass
+        spots = self.get_empty_spots()
+        np.random.shuffle(spots)
+        empty_spots = spots[0: self._initial_number_of_cells]
+        random_values = np.random.choice([2, 4], p=[0.75, 0.25], size=2)
+        self._grid._array[empty_spots[:, 0], empty_spots[:, 1]] = random_values
 
 
 if __name__ == "__main__":
     game = Game()
-    pass
+    game.fill_initial()
+    print(game)
