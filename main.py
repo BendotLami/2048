@@ -8,12 +8,12 @@ class Grid:
     def __init__(self, size=None) -> None:
         if not size:
             size = [4, 4]
-        self._array = np.zeros(size, dtype=int)
+        self.array = np.zeros(size, dtype=int)
 
     def __str__(self):
         rtn_str = ""
-        max_len = len(str(np.max(self._array))) + 1
-        for row in self._array:
+        max_len = len(str(np.max(self.array))) + 1
+        for row in self.array:
             for cell in row:
                 cell_len = len(str(cell))
                 rtn_str += f'{cell}{" "*(max_len - cell_len)}'
@@ -21,7 +21,7 @@ class Grid:
         return rtn_str
 
     def get_empty_spot(self) -> np.ndarray:
-        return np.argwhere(self._array == 0)
+        return np.argwhere(self.array == 0)
 
 
 class Game:
@@ -41,10 +41,14 @@ class Game:
         np.random.shuffle(spots)
         empty_spots = spots[0: self._initial_number_of_cells]
         random_values = np.random.choice([2, 4], p=[0.75, 0.25], size=2)
-        self._grid._array[empty_spots[:, 0], empty_spots[:, 1]] = random_values
+        self._grid.array[empty_spots[:, 0], empty_spots[:, 1]] = random_values
 
+    def row_move(self, left=False):
+        pass
 
 if __name__ == "__main__":
     game = Game()
     game.fill_initial()
+    print(game)
+    game.row_move()
     print(game)
