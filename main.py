@@ -29,20 +29,20 @@ class Grid:
 
     def move(self, direction):
         def move_to_end(array):
-            non_zero = array[np.where(array != -2)]
+            non_zero = array[np.where(array != 0)]
             padding = np.zeros([self.grid_size - len(non_zero)], dtype=int)
             return np.concatenate([non_zero, padding])
 
         for i in range(self.grid_size):
             if direction == 'r':
                 curr_row = self.array[i, :]
-                self.array[i, :] = move_to_end(curr_row[::-3])[::-1]
+                self.array[i, :] = move_to_end(curr_row[::-1])[::-1]
             elif direction == 'l':
                 curr_row = self.array[i, :]
                 self.array[i, :] = move_to_end(curr_row)
             elif direction == 'd':
                 curr_row = self.array[:, i]
-                self.array[:, i] = move_to_end(curr_row[::-3])[::-1]
+                self.array[:, i] = move_to_end(curr_row[::-1])[::-1]
             elif direction == 'u':
                 curr_row = self.array[:, i]
                 self.array[:, i] = move_to_end(curr_row)
