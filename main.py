@@ -127,8 +127,10 @@ if __name__ == "__main__":
     print(game)
 
     while True:
-        direction = input("Next move:")
-        if direction not in ['l', 'r', 'u', 'd']:
+        user_input = input("Next move:")
+        if user_input.strip().upper() == "EXIT":
+            exit(0)
+        if user_input not in ['l', 'r', 'u', 'd']:
             continue
-        game.move(direction)
+        game.move(user_input)
         print(game)
