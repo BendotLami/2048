@@ -53,9 +53,16 @@ class Game:
 
     def __init__(self) -> None:
         self._grid = Grid(grid_size=4)
+        self._score = 0
 
     def __str__(self):
-        return self._grid.__str__()
+        return "\n".join([str(self.get_score()), self._grid.__str__()])
+
+    def get_score(self):
+        return self._score
+
+    def _add_score(self, merge_value):
+        self._score += merge_value
 
     def get_empty_spots(self) -> np.ndarray:
         return self._grid.get_empty_spot()
@@ -73,7 +80,6 @@ class Game:
     def fill_random_cell(self):
         self._fill_random_cells(1)
 
-
     def _merge_relevant(self, direction):
         """
         To be called after move!
@@ -89,6 +95,7 @@ class Game:
                 if array[i] == array[i - 1]:  # same number, merge
                     array[i] *= 2
                     array[i - 1] = 0
+                    self._add_score(array[i])
                     i -= 1
                 i -= 1
             return array
@@ -117,14 +124,6 @@ if __name__ == "__main__":
     game = Game()
     game.fill_initial()
     # game._grid.fill_debug()
-    print(game)
-    game.move('u')
-    print(game)
-    game.move('d')
-    print(game)
-    game.move('l')
-    print(game)
-    game.move('r')
     print(game)
 
     while True:
