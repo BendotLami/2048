@@ -1,3 +1,4 @@
+import copy
 import dataclasses
 import random
 
@@ -21,11 +22,31 @@ class Grid:
             rtn_str += '\n'
         return rtn_str
 
+    def __eq__(self, other):
+        if not isinstance(other, Grid):
+            return False
+        return self.grid_size == other.grid_size and np.array_equal(self.array, other.array)
+
     def fill_debug(self):
         self.array = np.arange(0, self.grid_size ** 2).reshape([self.grid_size, self.grid_size])
 
     def get_empty_spot(self) -> np.ndarray:
         return np.argwhere(self.array == 0)
+
+    def apply_function_by_direction(self, direction, func):
+        for i in range(self.grid_size):
+            if direction == 'r':
+                curr_row = self.array[i, :]
+                self.array[i, :] = func(curr_row[::-1])[::-1]
+            elif direction == 'l':
+                curr_row = self.array[i, :]
+                self.array[i, :] = func(curr_row)
+            elif direction == 'd':
+                curr_row = self.array[:, i]
+                self.array[:, i] = func(curr_row[::-1])[::-1]
+            elif direction == 'u':
+                curr_row = self.array[:, i]
+                self.array[:, i] = func(curr_row)
 
     def move(self, direction):
         def move_to_end(array):
@@ -33,19 +54,7 @@ class Grid:
             padding = np.zeros([self.grid_size - len(non_zero)], dtype=int)
             return np.concatenate([non_zero, padding])
 
-        for i in range(self.grid_size):
-            if direction == 'r':
-                curr_row = self.array[i, :]
-                self.array[i, :] = move_to_end(curr_row[::-1])[::-1]
-            elif direction == 'l':
-                curr_row = self.array[i, :]
-                self.array[i, :] = move_to_end(curr_row)
-            elif direction == 'd':
-                curr_row = self.array[:, i]
-                self.array[:, i] = move_to_end(curr_row[::-1])[::-1]
-            elif direction == 'u':
-                curr_row = self.array[:, i]
-                self.array[:, i] = move_to_end(curr_row)
+        self.apply_function_by_direction(direction, move_to_end)
 
 
 class Game:
@@ -100,24 +109,15 @@ class Game:
                 i -= 1
             return array
 
-        for i in range(self._grid.grid_size):
-            if direction == 'r':
-                curr_row = self._grid.array[i, :]
-                self._grid.array[i, :] = _merge_array(curr_row[::-1])[::-1]
-            elif direction == 'l':
-                curr_row = self._grid.array[i, :]
-                self._grid.array[i, :] = _merge_array(curr_row)
-            elif direction == 'd':
-                curr_row = self._grid.array[:, i]
-                self._grid.array[:, i] = _merge_array(curr_row[::-1])[::-1]
-            elif direction == 'u':
-                curr_row = self._grid.array[:, i]
-                self._grid.array[:, i] = _merge_array(curr_row)
+        self._grid.apply_function_by_direction(direction, _merge_array)
 
     def move(self, direction):
+        grid_before = copy.deepcopy(self._grid)
         self._grid.move(direction)
         self._merge_relevant(direction)
         self._grid.move(direction)
+        if grid_before != self._grid:
+            game.fill_random_cell()
 
 
 if __name__ == "__main__":
@@ -131,5 +131,4 @@ if __name__ == "__main__":
         if direction not in ['l', 'r', 'u', 'd']:
             continue
         game.move(direction)
-        game.fill_random_cell()
         print(game)
