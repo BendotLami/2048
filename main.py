@@ -1,7 +1,4 @@
 import copy
-import dataclasses
-import random
-
 import numpy as np
 
 
@@ -18,7 +15,7 @@ class Grid:
         for row in self.array:
             for cell in row:
                 cell_len = len(str(cell))
-                rtn_str += f'{cell}{" "*(max_len - cell_len)}'
+                rtn_str += f'{cell if cell != 0 else "_"}{" "*(max_len - cell_len)}'
             rtn_str += '\n'
         return rtn_str
 
@@ -56,6 +53,9 @@ class Grid:
 
         self.apply_function_by_direction(direction, move_to_end)
 
+    def get_cell_value(self, x, y):
+        return self.array[x, y]
+
 
 class Game:
     _initial_number_of_cells = 2
@@ -63,6 +63,7 @@ class Game:
     def __init__(self) -> None:
         self._grid = Grid(grid_size=4)
         self._score = 0
+        self.fill_initial()
 
     def __str__(self):
         return "\n".join([str(self.get_score()), self._grid.__str__()])
@@ -99,14 +100,14 @@ class Game:
             """
             default is right move
             """
-            i = len(array) - 1  # last element
-            while i > 0:  # iterate backward
-                if array[i] == array[i - 1]:  # same number, merge
+            i = 0  # last element
+            while i < len(array) - 1:  # iterate backward
+                if array[i] == array[i + 1]:  # same number, merge
                     array[i] *= 2
-                    array[i - 1] = 0
+                    array[i + 1] = 0
                     self._add_score(array[i])
-                    i -= 1
-                i -= 1
+                    i += 1
+                i += 1
             return array
 
         self._grid.apply_function_by_direction(direction, _merge_array)
@@ -117,12 +118,11 @@ class Game:
         self._merge_relevant(direction)
         self._grid.move(direction)
         if grid_before != self._grid:
-            game.fill_random_cell()
+            self.fill_random_cell()
 
 
 if __name__ == "__main__":
     game = Game()
-    game.fill_initial()
     # game._grid.fill_debug()
     print(game)
 
