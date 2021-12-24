@@ -5,6 +5,7 @@ import numpy as np
 class GameMechanic:
     _initial_number_of_cells = 2
     _spaces_between_cells = 1
+    _directions = ['u', 'd', 'l', 'r']
 
     def __init__(self, grid_size=None) -> None:
         if not grid_size:
@@ -116,8 +117,10 @@ class GameMechanic:
         self.push_values_to_edge(direction)
         if not np.array_equal(grid_before, self.grid):
             self.fill_random_cell()
+            return True
+        return False
 
-    # API
+    # API for state
     def get_cell_value(self, x, y):
         return self.grid[x, y]
 
@@ -127,6 +130,19 @@ class GameMechanic:
     def get_grid_size(self):
         return self.grid_size
 
+    def can_move_to_direction(self, direction):
+        temp_game = copy.deepcopy(self)
+        return temp_game.move(direction)
+
+    def any_move(self):
+        for move in self._directions:
+            if self.can_move_to_direction(move):
+                return True
+        return False
+
+    def is_game_over(self):
+        return not self.any_move()
+
 
 if __name__ == "__main__":
     game = GameMechanic()
@@ -135,7 +151,7 @@ if __name__ == "__main__":
 
     while True:
         user_input = input("Next move:")
-        if user_input.strip().upper() == "EXIT":
+        if user_input.strip().upper() == "EXIT" or game.is_game_over():
             exit(0)
         if user_input not in ['l', 'r', 'u', 'd']:
             continue
