@@ -15,13 +15,14 @@ class GameGui:
     _down_keys = ["<s>", "<j>", "<Down>"]
 
     _gray = 160, 160, 160
-    _max_color_gradient = 5
+    _bg_color_list = ["#eee4da", "#eee1c9", "#f3b27a", "#f69664", "#f77c5f", "#f75f3b", "#edd073", "#edcc62", "#edc950",
+                      "#edc53f", "#edc22e"]
 
     def init_window(self):
         window = tk.Tk()
         for i in range(self.grid_size):
-            window.rowconfigure(i, minsize=50)
-            window.columnconfigure(i, minsize=50)
+            window.rowconfigure(i, minsize=self.window_size)
+            window.columnconfigure(i, minsize=self.window_size)
         return window
 
     def init_labels(self):
@@ -35,8 +36,9 @@ class GameGui:
             labels.append(lst)
         return labels
 
-    def __init__(self, grid_size=4):
+    def __init__(self, grid_size=4, window_size=100):
         self.grid_size = grid_size
+        self.window_size = window_size
         self.game = GameMechanic(grid_size=self.grid_size)
 
         self._window = self.init_window()
@@ -49,14 +51,18 @@ class GameGui:
         return value if value else ''
 
     @staticmethod
-    def _render_cell_color(value):
+    def _render_cell_color(value):  # for 128 >= value
         if value == 0:
             return render_rgb(GameGui._gray)
         log_value = int(log2(value)) - 1  # minus one for values [0,..]
-        relative_value = ((GameGui._max_color_gradient - log_value) / GameGui._max_color_gradient)
-        blue_value = int(204 * relative_value)
-        blue_value = min(255, blue_value)
-        return render_rgb((255, 255, blue_value))
+        return GameGui._bg_color_list[log_value]
+
+    @staticmethod
+    def _render_cell_text_color(value):
+        if value > 4:
+            return '#f9f6f2'
+        else:
+            return '#000000'
 
     def _render_display(self):
         for i in range(self.grid_size):
@@ -64,6 +70,7 @@ class GameGui:
                 cell_value = self.game.get_cell_value(i, j)
                 self._labels[i][j]["text"] = self._render_cell_text(cell_value)
                 self._labels[i][j]["bg"] = self._render_cell_color(cell_value)
+                self._labels[i][j]["fg"] = self._render_cell_text_color(cell_value)
 
     def _make_a_move(self, direction):
         print(f"Making a move! {direction}")
