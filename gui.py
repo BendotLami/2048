@@ -17,6 +17,7 @@ class GameGui:
     _gray = 160, 160, 160
     _bg_color_list = ["#eee4da", "#eee1c9", "#f3b27a", "#f69664", "#f77c5f", "#f75f3b", "#edd073", "#edcc62", "#edc950",
                       "#edc53f", "#edc22e"]
+    _label_font = ('Arial', 20)
 
     def init_window(self):
         window = tk.Tk()
@@ -30,7 +31,7 @@ class GameGui:
         for i in range(self.grid_size):
             lst = []
             for j in range(self.grid_size):
-                label = tk.Label(text=f"", bg="yellow", fg="black")
+                label = tk.Label(text=f"", bg="yellow", fg="black", font=self._label_font)
                 label.grid(row=i, column=j, sticky="nsew", padx=3, pady=3)
                 lst.append(label)
             labels.append(lst)
@@ -55,7 +56,7 @@ class GameGui:
         if value == 0:
             return render_rgb(GameGui._gray)
         log_value = int(log2(value)) - 1  # minus one for values [0,..]
-        return GameGui._bg_color_list[log_value]
+        return GameGui._bg_color_list[min(log_value, len(GameGui._bg_color_list) - 1)]
 
     @staticmethod
     def _render_cell_text_color(value):

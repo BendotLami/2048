@@ -6,6 +6,8 @@ class GameMechanic:
     _initial_number_of_cells = 2
     _spaces_between_cells = 1
     _directions = ['u', 'd', 'l', 'r']
+    _spawn_numbers = [2, 4]
+    _spawn_probabilities = [0.75, 0.25]
 
     def __init__(self, grid_size=None) -> None:
         if not grid_size:
@@ -51,7 +53,7 @@ class GameMechanic:
         spots = self.get_empty_spots()
         np.random.shuffle(spots)
         empty_spots = spots[0: size]
-        random_values = np.random.choice([2, 4], p=[0.75, 0.25], size=size)
+        random_values = np.random.choice(self._spawn_numbers, p=self._spawn_probabilities, size=size)
         self.grid[empty_spots[:, 0], empty_spots[:, 1]] = random_values
 
     def fill_initial(self):
