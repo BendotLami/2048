@@ -3,6 +3,22 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import numpy as np
+from math import log2
+from main import GameMechanic
+
+CELL_ARRAY_SIZE = 16  # max cell value is 2**16 (inclusive)
+
+
+def convert_board_to_idx(game: GameMechanic):
+    n = game.get_grid_size()
+    idx_board = np.zeros((n, n, CELL_ARRAY_SIZE))
+    for x in range(n):
+        for y in range(n):
+            cell_val = game.get_cell_value(x, y)
+            if cell_val:  # not empty
+                idx_board_val = int(log2(cell_val)) - 1
+                idx_board[x, y, idx_board_val] = 1
+    return idx_board
 
 
 class NN_2048(nn.Module):
@@ -59,7 +75,8 @@ class NN_2048(nn.Module):
 
 
 if __name__ == '__main__':
-    arr = np.ones([4, 4, 16], dtype=float)
+    game = GameMechanic()
+    arr = convert_board_to_idx(game)
     arr = np.moveaxis(arr, 2, 0)
     arr = np.expand_dims(arr, axis=0)  # single batch
     tensor = torch.from_numpy(arr)

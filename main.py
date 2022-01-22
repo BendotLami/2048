@@ -145,6 +145,9 @@ class GameMechanic:
     def is_game_over(self):
         return not self.any_move()
 
+    def get_grid_copy(self) -> np.array:
+        return np.copy(self.grid)
+
 
 if __name__ == "__main__":
     game = GameMechanic()
