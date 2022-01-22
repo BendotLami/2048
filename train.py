@@ -84,4 +84,10 @@ if __name__ == '__main__':
     model = NN_2048()
     model.double()
 
+    optimizer = optim.RMSprop(model.parameters())
+
+    for epoch in range(10):
+        pass
+    # lr_optimizer (...) - exponential decay
+
     print(model(tensor).shape)
